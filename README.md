@@ -1,6 +1,7 @@
 A simple clone of Tetris 
 
 Control:
-Space: speed up
-Right arrow: move right
-Left arrow: move left
+  + Right arrow: move right
+  + Left arrow: move left
+  + Down arrow: speedup
+  + Z: rotate shape
