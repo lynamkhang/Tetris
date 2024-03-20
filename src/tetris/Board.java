@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Random;
 
 
 public class Board extends JPanel implements KeyListener {
@@ -15,11 +16,12 @@ public class Board extends JPanel implements KeyListener {
     public static final int boardWidth = 10, boardHeight = 20;
     public static final  int blockSize = 30;
     private Timer looper;
+    private Random random = new Random();
     private Color[][] board = new Color[boardHeight][boardWidth];
     private Shape[] shapes = new Shape[7];
     private Color[] colors = {Color.decode("#ed1c24"), Color.decode("#ff7f27"), Color.decode("#fff200"),
             Color.decode("#22b14c"), Color.decode("#00a2e8"), Color.decode("#a349a4"), Color.decode("#3f48cc")};
-    private Shape curShape;
+    private Shape curShape, nxtShape;
 
     public Board() {
 
@@ -73,6 +75,18 @@ public class Board extends JPanel implements KeyListener {
         curShape.update();
     }
 
+    public void setNxtShape() {
+        int index = random.nextInt(shapes.length);
+        int colorIndex = random.nextInt(colors.length);
+        nxtShape = new Shape(shapes[index].getCoordinates(), this, colors[colorIndex] );
+    }
+
+    public void setCurShape() {
+        int index = (int) (Math.random() * 6) + 1;
+        curShape = shapes[index];
+        curShape.reset();
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -81,10 +95,20 @@ public class Board extends JPanel implements KeyListener {
 
         curShape.render(g);
 
+        for (int row = 0; row < board.length; row ++) {
+            for (int col = 0; col < board[row].length; col++) {
+
+                if (board[row][col] != null) {
+                    g.setColor(board[row][col]);
+                    g.fillRect(col * blockSize, row * blockSize, blockSize, blockSize);
+                }
+            }
+        }
+
         //draw board
         g.setColor(Color.WHITE);
         for (int row = 0; row <= boardHeight; row++) {
-              g.drawLine(0, row * blockSize, blockSize * boardWidth, row * blockSize);
+            g.drawLine(0, row * blockSize, blockSize * boardWidth, row * blockSize);
         }
 
         for (int col = 0; col <= boardWidth; col++) {
@@ -104,7 +128,7 @@ public class Board extends JPanel implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+        if (e.getKeyCode() == KeyEvent.VK_DOWN) {
             curShape.speedUp();
         }
         else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
@@ -113,11 +137,14 @@ public class Board extends JPanel implements KeyListener {
         else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
             curShape.moveLeft();
         }
+        else if (e.getKeyCode() == KeyEvent.VK_A) {
+            curShape.rotateShape();
+        }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+        if (e.getKeyCode() == KeyEvent.VK_DOWN) {
             curShape.speedDown();
         }
     }
